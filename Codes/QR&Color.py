@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import RPi.GPIO as GPIO
 import imutils
 from imutils.video import WebcamVideoStream
 from _thread import *
@@ -82,21 +81,16 @@ if __name__ == "__main__":
                 #cv2.circle(frame,(cx,cy),3,(0,255,255),-1)
 
                 if first:
-                    #print("Area = ",w*h)
-                    #exit(0)
-                    maxArea = 3*w*h/2
-                    minArea = w*h/2
-
-            else:
-                flag = 0
-
-
+			#print("Area = ",w*h)
+                    	#exit(0)
+                    	maxArea = 3*w*h/2
+                    	minArea = w*h/2
+            	else:
+			flag = 0
 
     cv2.imshow("Frame",frame)
-    #cv2.imshow("Mask", mask)
 
     k = cv2.waitKey(1) & 0xFF
-
     if k == ord('q'):
         threadStop = True
         break
