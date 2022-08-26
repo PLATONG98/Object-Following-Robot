@@ -7,12 +7,13 @@ import time
 from pyzbar.pyzbar import decode
 
 QR_CODE = [
-	"TOWER_ROBOT_001"
-]        
+    "TOWER_ROBOT_001"
+]
 
 if __name__ == "__main__":
 
     global cx,w,h,flag,minArea,maxArea,lock,fw,threadStop
+
     threadStop = False #To terminate the thread which drives the robot whenever the user quits
 
     lock = False #To lock the object
@@ -22,37 +23,33 @@ if __name__ == "__main__":
     #Range of the colors to detect an Object in this range
     lower_thresh = np.array([255, 103, 0])
     high_thresh = np.array([250, 214, 165])
-    
+
     #To stream the video from the webcam
     device = WebcamVideoStream(src=0).start()
-  
-    first = True
-    start_new_thread(drive,()) #Thread to drive the robot
-    
-    while True:
-        frame = device.read() #It reads frames from the video
-        #_, frame = device.read()
-        #frame = cv2.flip(frame,1)
-        
-        while True:
-	success, camera = device.read()
-	if not success:
-		break
-	for barcode in decode(camera):
-		myData = barcode.data.decode("utf-8")
 
-		if myData in myDataList:
-			color = (0, 255, 0)
-		else:
-			color = (0, 0, 255)
-		
-		if myData == "TOWER_ROBOT_001":
-			process()
-            time.sleep(1)
-		else:
-			print("Tower Robot Not Found")
-			break
-        
+    first = True
+
+    while True:
+        frame = device.read()
+        while True:
+            success, camera = device.read()
+            if not success:
+                break
+        for barcode in decode(camera):
+            myData = barcode.data.decode("utf-8")
+
+            if myData in myDataList:
+                color = (0, 255, 0)
+            else:
+                color = (0, 0, 255)
+
+            if myData == "TOWER_ROBOT_001":
+                process()
+                time.sleep(1)
+            else:
+                print("Tower Robot Not Found")
+                break
+
         def process():
             #Pre-processing of the frame to detect the object
             blurred = cv2.GaussianBlur(frame, (11, 11), 0)
@@ -81,25 +78,24 @@ if __name__ == "__main__":
                 #cv2.circle(frame,(cx,cy),3,(0,255,255),-1)
 
                 if first:
-			#print("Area = ",w*h)
-                    	#exit(0)
-                    	maxArea = 3*w*h/2
-                    	minArea = w*h/2
-            	else:
-			flag = 0
+                    #print("Area = ",w*h)
+                    #exit(0)
+                    maxArea = 3*w*h/2
+                    minArea = w*h/2
+                else:
+                    flag = 0
 
-    cv2.imshow("Frame",frame)
-
-    k = cv2.waitKey(1) & 0xFF
-    if k == ord('q'):
-        threadStop = True
-        break
-    elif k == ord('l') and flag==1:
-        print("Locked")
-        print("Fw = ",fw)
-        print("Fh = ",fh)
-        first = False
-        lock = True
+        cv2.imshow("Frame",frame)
+        k = cv2.waitKey(1) & 0xFF
+        if k == ord('q'):
+            threadStop = True
+            break
+elif k == ord('l') and flag==1:
+    print("Locked")
+    print("Fw = ",fw)
+    print("Fh = ",fh)
+    first = False
+    lock = True
 
 #device.release()
 device.stop()
